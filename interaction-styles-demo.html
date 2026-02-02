@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interaction Styles Demo </title>
+
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      color: #2d3748;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-50%) translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .back-btn.hidden {
+      display: none;
+    }
+
+    /* Mode Selection Grid */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
+
+    .mode-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
+      border-color: #667eea;
+    }
+
+    .mode-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .mode-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .mode-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+
+    .mode-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      background: #edf2f7;
+      color: #667eea;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mode-description {
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 15px;
+    }
+
+    .mode-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Mode Screens */
+    .mode-screen {
+      display: none;
+    }
+    #homeScreen {
+  display: block;
+}
+
+#homeScreen.hidden {
+  display: none;
+}
+
+
+    .mode-screen.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Panel Styling */
+    .panel {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .panel-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #2d3748;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    /* Mouse Mode */
+    .mouse-controls {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .color-btn {
+      flex: 1;
+      min-width: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 20px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .color-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .color-btn:active {
+      transform: translateY(-2px);
+    }
+
+    .reset-btn {
+      background: #e2e8f0;
+      color: #2d3748;
+      border: none;
+      padding: 20px 32px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .reset-btn:hover {
+      background: #cbd5e0;
+      transform: translateY(-2px);
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: #edf2f7;
+      color: #667eea;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    /* Keyboard Mode */
+    .input-wrapper {
+      margin-bottom: 24px;
+    }
+
+    .kb-input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .kb-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .history-box {
+      width: 100%;
+      min-height: 150px;
+      padding: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f7fafc;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #2d3748;
+      resize: vertical;
+      margin-top: 16px;
+    }
+
+    .history-box:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .clear-btn {
+      margin-top: 16px;
+      background: #fc8181;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      background: #f56565;
+      transform: translateY(-2px);
+    }
+
+    /* Touch Mode */
+    .touch-zone {
+      height: 300px;
+      border: 3px dashed #cbd5e0;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+      transition: all 0.3s ease;
+    }
+
+    .touch-zone:hover {
+      border-color: #667eea;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    }
+
+    .touch-zone-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .touch-zone-text {
+      font-size: 18px;
+      color: #718096;
+      font-weight: 600;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .hint {
+      background: #edf2f7;
+      color: #718096;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-top: 24px;
+      font-size: 14px;
+      border-left: 4px solid #667eea;
+    }
+
+    .hint strong {
+      color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .back-btn {
+        position: static;
+        transform: none;
+        margin-bottom: 20px;
+        width: 100%;
+      }
+
+      .back-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .mode-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mouse-controls {
+        flex-direction: column;
+      }
+
+      .color-btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <button id="backBtn" class="back-btn hidden">← Back to Home</button>
+      <h1>✨ Interaction Styles Demo</h1>
+      <p class="subtitle">Explore three fundamental ways users interact with interfaces</p>
+    </header>
+
+    <!-- HOME SCREEN -->
+    <div id="homeScreen">
+      <div class="mode-grid">
+        <!-- Mouse Card -->
+        <div class="mode-card" data-mode="mouse">
+          <span class="mode-icon">🖱️</span>
+          <h2 class="mode-title">Mouse Interaction</h2>
+          <div class="mode-tags">
+            <span class="tag">Click</span>
+            <span class="tag">Hover</span>
+            <span class="tag">Double-Click</span>
+          </div>
+          <p class="mode-description">
+            Experience classic mouse-based interactions with dynamic color changes, click tracking, and hover effects.
+          </p>
+          <button class="mode-btn">Explore Mouse Mode →</button>
+        </div>
+
+        <!-- Keyboard Card -->
+        <div class="mode-card" data-mode="keyboard">
+          <span class="mode-icon">⌨️</span>
+          <h2 class="mode-title">Keyboard Input</h2>
+          <div class="mode-tags">
+            <span class="tag">Typing</span>
+            <span class="tag">Shortcuts</span>
+            <span class="tag">Events</span>
+          </div>
+          <p class="mode-description">
+            Test keyboard interactions with live character counting, word analysis, and keyboard shortcuts.
+          </p>
+          <button class="mode-btn">Explore Keyboard Mode →</button>
+        </div>
+
+        <!-- Touch Card -->
+        <div class="mode-card" data-mode="touch">
+          <span class="mode-icon">👆</span>
+          <h2 class="mode-title">Touch Gestures</h2>
+          <div class="mode-tags">
+            <span class="tag">Tap</span>
+            <span class="tag">Swipe</span>
+            <span class="tag">Press</span>
+          </div>
+          <p class="mode-description">
+            Detect sophisticated touch gestures including taps, long presses, and directional swipes.
+          </p>
+          <button class="mode-btn">Explore Touch Mode →</button>
+        </div>
+      </div>
+
+      <div class="hint">
+        <strong>💡 Pro Tip:</strong> Touch gestures work best on mobile devices, tablets, or using Chrome DevTools device emulation mode.
+      </div>
+    </div>
+
+    <!-- MOUSE SCREEN -->
+    <div id="mouseScreen" class="mode-screen">
+      <div class="panel">
+        <h2 class="panel-title">🖱️ Mouse Interaction Mode</h2>
+        
+        <div class="mouse-controls">
+          <button id="colorBtn" class="color-btn">Click Me for Colors! 🎨</button>
+          <button id="resetMouse" class="reset-btn">Reset Counters</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Total Clicks</div>
+            <div class="stat-value" id="clickCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Double Clicks</div>
+            <div class="stat-value" id="dblClickCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Hover Events</div>
+            <div class="stat-value" id="hoverCount">0</div>
+          </div>
+        </div>
+
+        <div class="status-badge" id="mouseStatus">⚪ Waiting for interaction...</div>
+
+        <div class="hint">
+          <strong>Try this:</strong> Single click to change colors | Hover over the button | Double-click for bonus points
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYBOARD SCREEN -->
+    <div id="keyboardScreen" class="mode-screen">
+      <div class="panel">
+        <h2 class="panel-title">⌨️ Keyboard Interaction Mode</h2>
+        
+        <div class="input-wrapper">
+          <input 
+            id="kbInput" 
+            class="kb-input" 
+            type="text" 
+            placeholder="Start typing to see live statistics... (Ctrl+K to clear)"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Characters</div>
+            <div class="stat-value" id="charCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Words</div>
+            <div class="stat-value" id="wordCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Last Key</div>
+            <div class="stat-value" id="lastKey" style="font-size: 20px;">-</div>
+          </div>
+        </div>
+
+        <textarea id="kbHistory" class="history-box" readonly>📝 Your typing history will appear here...</textarea>
+
+        <button id="clearKb" class="clear-btn">Clear All</button>
+
+        <div class="hint">
+          <strong>Keyboard Shortcuts:</strong> Press Ctrl+K to quickly clear | Press Escape to return home
+        </div>
+      </div>
+    </div>
+
+    <!-- TOUCH SCREEN -->
+    <div id="touchScreen" class="mode-screen">
+      <div class="panel">
+        <h2 class="panel-title">👆 Touch Gesture Mode</h2>
+        
+        <div id="touchZone" class="touch-zone">
+          <div class="touch-zone-icon">📱</div>
+          <div class="touch-zone-text">
+            Tap, Press, or Swipe Here<br>
+            <small style="opacity: 0.7;">(Try swiping in any direction)</small>
+          </div>
+        </div>
+
+        <div class="result-box" id="touchResult">
+          🎯 Perform a gesture above to see the result
+        </div>
+
+        <div class="hint">
+          <strong>Gestures to try:</strong> 
+          Quick tap 👆 | Long press (600ms) ⏱️ | Swipe left 👈 | Swipe right 👉 | Swipe up ☝️ | Swipe down 👇
+        </div>
+
+        <div class="hint" style="margin-top: 12px;">
+          <strong>💡 Best Experience:</strong> Use this mode on a touch-enabled device or enable touch emulation in Chrome DevTools (F12 → Device Toolbar)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Screen Management
+    const screens = {
+      home: document.getElementById('homeScreen'),
+      mouse: document.getElementById('mouseScreen'),
+      keyboard: document.getElementById('keyboardScreen'),
+      touch: document.getElementById('touchScreen')
+    };
+
+    const backBtn = document.getElementById('backBtn');
+
+  function showScreen(screenName) {
+  // hide everything first
+  document.getElementById('homeScreen').style.display = 'none';
+  Object.values(screens).forEach(screen => screen.classList.remove('active'));
+
+  if (screenName === 'home') {
+    document.getElementById('homeScreen').style.display = 'block';
+  } else {
+    screens[screenName].classList.add('active');
+  }
+
+  backBtn.classList.toggle('hidden', screenName === 'home');
+}
+
+
+    // Mode card navigation
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const mode = card.getAttribute('data-mode');
+        showScreen(mode);
+      });
+    });
+
+    backBtn.addEventListener('click', () => showScreen('home'));
+
+    // Global escape key to return home
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') showScreen('home');
+    });
+
+    // ============================================
+    // MOUSE MODE FUNCTIONALITY
+    // ============================================
+    const colorBtn = document.getElementById('colorBtn');
+    const resetMouse = document.getElementById('resetMouse');
+    const mouseStatus = document.getElementById('mouseStatus');
+    const clickCountEl = document.getElementById('clickCount');
+    const dblClickCountEl = document.getElementById('dblClickCount');
+    const hoverCountEl = document.getElementById('hoverCount');
+
+    let clicks = 0, doubleClicks = 0, hovers = 0;
+
+    function randomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    colorBtn.addEventListener('click', () => {
+      clicks++;
+      clickCountEl.textContent = clicks;
+      
+      const newColor = randomColor();
+      colorBtn.style.background = `linear-gradient(135deg, ${newColor}, ${adjustBrightness(newColor, -20)})`;
+      
+      mouseStatus.textContent = '🟢 Click detected!';
+      mouseStatus.style.background = '#d4edda';
+      mouseStatus.style.color = '#155724';
+      
+      // Pulse animation
+      colorBtn.style.transform = 'scale(1.05)';
+      setTimeout(() => colorBtn.style.transform = 'scale(1)', 150);
+    });
+
+    colorBtn.addEventListener('dblclick', () => {
+      doubleClicks++;
+      dblClickCountEl.textContent = doubleClicks;
+      mouseStatus.textContent = '⚡ Double-click detected!';
+      mouseStatus.style.background = '#fff3cd';
+      mouseStatus.style.color = '#856404';
+    });
+
+    colorBtn.addEventListener('mouseenter', () => {
+      hovers++;
+      hoverCountEl.textContent = hovers;
+      mouseStatus.textContent = '👀 Hover detected!';
+      mouseStatus.style.background = '#d1ecf1';
+      mouseStatus.style.color = '#0c5460';
+    });
+
+    resetMouse.addEventListener('click', () => {
+      clicks = doubleClicks = hovers = 0;
+      clickCountEl.textContent = '0';
+      dblClickCountEl.textContent = '0';
+      hoverCountEl.textContent = '0';
+      colorBtn.style.background = '';
+      mouseStatus.textContent = '🔄 Counters reset!';
+      mouseStatus.style.background = '#edf2f7';
+      mouseStatus.style.color = '#667eea';
+    });
+
+    function adjustBrightness(hex, percent) {
+      const num = parseInt(hex.slice(1), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+        (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+        .toString(16).slice(1);
+    }
+
+    // ============================================
+    // KEYBOARD MODE FUNCTIONALITY
+    // ============================================
+    const kbInput = document.getElementById('kbInput');
+    const kbHistory = document.getElementById('kbHistory');
+    const clearKb = document.getElementById('clearKb');
+    const charCountEl = document.getElementById('charCount');
+    const wordCountEl = document.getElementById('wordCount');
+    const lastKeyEl = document.getElementById('lastKey');
+
+    function updateKeyboardStats() {
+      const text = kbInput.value;
+      const chars = text.length;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      
+      charCountEl.textContent = chars;
+      wordCountEl.textContent = words;
+      kbHistory.value = text || '📝 Your typing history will appear here...';
+    }
+
+    kbInput.addEventListener('input', updateKeyboardStats);
+
+    kbInput.addEventListener('keydown', (e) => {
+      lastKeyEl.textContent = e.key.length === 1 ? e.key : `[${e.key}]`;
+      
+      // Ctrl+K to clear
+      if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        kbInput.value = '';
+        updateKeyboardStats();
+        lastKeyEl.textContent = 'Cleared!';
+      }
+    });
+
+    clearKb.addEventListener('click', () => {
+      kbInput.value = '';
+      updateKeyboardStats();
+      lastKeyEl.textContent = 'Cleared!';
+      kbInput.focus();
+    });
+
+    // ============================================
+    // TOUCH MODE FUNCTIONALITY
+    // ============================================
+    const touchZone = document.getElementById('touchZone');
+    const touchResult = document.getElementById('touchResult');
+
+    let touchStartX = 0, touchStartY = 0;
+    let touchEndX = 0, touchEndY = 0;
+    let longPressTimer = null;
+    let isLongPress = false;
+
+    const MIN_SWIPE = 60;
+    const LONG_PRESS_DURATION = 600;
+
+    touchZone.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchEndX = touchStartX;
+      touchEndY = touchStartY;
+      isLongPress = false;
+
+      touchZone.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%)';
+      touchResult.textContent = '⏱️ Touch detected...';
+
+      longPressTimer = setTimeout(() => {
+        isLongPress = true;
+        touchResult.textContent = '✅ Long Press Detected! ⏳';
+        navigator.vibrate && navigator.vibrate(50);
+      }, LONG_PRESS_DURATION);
+    });
+
+    touchZone.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+
+      const moved = Math.abs(touchEndX - touchStartX) > 10 || Math.abs(touchEndY - touchStartY) > 10;
+      if (moved) clearTimeout(longPressTimer);
+    });
+
+    touchZone.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      clearTimeout(longPressTimer);
+      touchZone.style.background = '';
+
+      if (isLongPress) return;
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+
+      if (absX < 10 && absY < 10) {
+        touchResult.textContent = '✅ Tap Detected! 👆';
+        return;
+      }
+
+      if (absX > absY && absX > MIN_SWIPE) {
+        touchResult.textContent = deltaX > 0 ? '✅ Swipe Right Detected! 👉' : '✅ Swipe Left Detected! 👈';
+      } else if (absY > absX && absY > MIN_SWIPE) {
+        touchResult.textContent = deltaY > 0 ? '✅ Swipe Down Detected! 👇' : '✅ Swipe Up Detected! ☝️';
+      } else {
+        touchResult.textContent = '⚠️ Swipe too short - try again!';
+      }
+    });
+
+    touchZone.addEventListener('touchcancel', () => {
+      clearTimeout(longPressTimer);
+      touchZone.style.background = '';
+    });
+
+    // Initialize
+    showScreen('home');
+  </script>
+</body>
+</html>
